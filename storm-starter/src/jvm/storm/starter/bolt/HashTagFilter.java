@@ -73,7 +73,7 @@ public class HashTagFilter extends BaseRichBolt {
 		Status tweet = (Status) input.getValue(1);
 		for (String tag : hashTags) {
 			if (tweet.getText().toLowerCase().contains(tag)) {
-				_collector.emit(new Values(input.getValues()));
+				_collector.emit(input.getValues());
 				return;
 			}
 		}

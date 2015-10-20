@@ -67,11 +67,11 @@ public class TweetStats {
                 .allGrouping(TopologyConstants.CONTINENT_SPOUT).shuffleGrouping(TopologyConstants.TWEET_STREAM);
         builder.setBolt(TopologyConstants.HASHTAG_FILTER, new HashTagFilter())
         .allGrouping(TopologyConstants.HASHTAG_SPOUT).shuffleGrouping(TopologyConstants.CONTINENT_FILTER);        
-        /* builder.setBolt(TopologyConstants.WORD_SPLITTER, new WordSplitter()).shuffleGrouping(TopologyConstants.HASHTAG_FILTER);
-         builder.setBolt(TopologyConstants.STOP_WORD_FILTER, new StopWordFilter()).shuffleGrouping(TopologyConstants.WORD_SPLITTER);
-         builder.setBolt(TopologyConstants.PARTIAL_AGGREGATOR, new PartialAggregator()).fieldsGrouping(TopologyConstants.STOP_WORD_FILTER, new Fields("word"));
+        builder.setBolt(TopologyConstants.WORD_SPLITTER, new WordSplitter()).shuffleGrouping(TopologyConstants.HASHTAG_FILTER);
+        builder.setBolt(TopologyConstants.STOP_WORD_FILTER, new StopWordFilter()).shuffleGrouping(TopologyConstants.WORD_SPLITTER);
+        builder.setBolt(TopologyConstants.PARTIAL_AGGREGATOR, new PartialAggregator()).fieldsGrouping(TopologyConstants.STOP_WORD_FILTER, new Fields("word"));
          builder.setBolt(TopologyConstants.GLOBAL_AGGREGATOR, new GlobalAggregator()).globalGrouping(TopologyConstants.PARTIAL_AGGREGATOR);
-         */
+        
         Config conf = new Config();
         conf.put(TopologyConstants.FILE_NAME_STR, fileName);
         

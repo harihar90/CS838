@@ -39,7 +39,7 @@ public class GlobalAggregator extends BaseRichBolt {
 	@Override
 	public void prepare(Map conf, TopologyContext context, OutputCollector collector) {
 		// TODO Auto-generated method stub
-		fileName = (String) conf.get(TopologyConstants.FILE_NAME_STR) + "_" + context.getThisTaskId();
+		fileName = (String) conf.get(TopologyConstants.FILE_NAME_STR);
 		;
 
 	}
@@ -57,6 +57,9 @@ public class GlobalAggregator extends BaseRichBolt {
 					for (String word : words) {
 						file.write((word + "\n").getBytes());
 					}
+					file.flush();
+					file.close();
+					
 				} catch (IOException e) {
 					System.err.println(e);
 				}
