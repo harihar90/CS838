@@ -54,8 +54,8 @@ public class PrintSampleStream {
         
         cluster.submitTopology("test", conf, builder.createTopology());
         
-        Utils.sleep(20000);
+        Utils.sleep(32000);
         cluster.shutdown();
-        System.exit(0);
+        //System.exit(0);
     }
 }

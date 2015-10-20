@@ -54,6 +54,15 @@ public class TwitterSampleSpout extends BaseRichSpout {
 	String[] hashTags;
 	String continent;
 	boolean geoTagged=false;
+	boolean sample=false;
+	public TwitterSampleSpout(String consumerKey, String consumerSecret,
+			String accessToken, String accessTokenSecret, boolean sample) {
+		this.consumerKey = consumerKey;
+		this.consumerSecret = consumerSecret;
+		this.accessToken = accessToken;
+		this.accessTokenSecret = accessTokenSecret;
+		this.sample= sample;
+	}
 	public TwitterSampleSpout(String consumerKey, String consumerSecret,
 			String accessToken, String accessTokenSecret, String[] keyWords,boolean geoTagged) {
 		this.consumerKey = consumerKey;
@@ -67,12 +76,6 @@ public class TwitterSampleSpout extends BaseRichSpout {
 	
 
 	
-
-	private void hashTagifyStrings(String[] hashTags) {
-		for(int i=0;i<hashTags.length;i++){
-			hashTags[i]="#"+hashTags[i];
-		}
-	}
 
 	@Override
 	public void open(Map conf, TopologyContext context,
@@ -124,18 +127,13 @@ public class TwitterSampleSpout extends BaseRichSpout {
 		if(geoTagged){
 			query.locations(new double[][]{{-180,-90},{180,90}});
 		}
-		
-		if (keyWords.length == 0) {
-
-			twitterStream.filter(query);
-		}
-
-		else {
-			
+		 if (keyWords.length == 0){
+			keyWords=new String[]{"#yetanothersummytwittertesttag"};
+		}	
 			
 			query.track(keyWords);
 			twitterStream.filter(query);
-		}
+		
 
 	}
 
