@@ -37,8 +37,9 @@ public class HashTagFilter extends BaseRichBolt {
 		if (input.getSourceComponent().equals(TopologyConstants.HASHTAG_SPOUT)) {
 			List<String> hashTags = new ArrayList<String>();
 
-			for (Object value : input.getValues()) {
-				hashTags.add((String) value);
+			for (Object value : input.getValues().subList(1, input.getValues().size())) {
+				for (String word : (List<String>) value)
+					hashTags.add(word.toLowerCase());
 			}
 			hashTagQueue.add(hashTags);
 
@@ -49,7 +50,7 @@ public class HashTagFilter extends BaseRichBolt {
 			}
 
 		}
-		if (input.getSourceComponent().equals(TopologyConstants.TWEET_STREAM)) {
+		if (input.getSourceComponent().equals(TopologyConstants.CONTINENT_FILTER)) {
 			filterTuple(input);
 		}
 
@@ -71,8 +72,10 @@ public class HashTagFilter extends BaseRichBolt {
 	private void process(Tuple input, List<String> hashTags) {
 		Status tweet = (Status) input.getValue(1);
 		for (String tag : hashTags) {
-			if (tweet.getText().contains(tag))
+			if (tweet.getText().toLowerCase().contains(tag)) {
 				_collector.emit(new Values(input.getValues()));
+				return;
+			}
 		}
 
 	}

@@ -1,8 +1,8 @@
 package storm.starter.util;
 
 public class TopologyConstants {
-public static final long INTERVAL = 30000L;
-public static final int HASHTAG_SAMPLESIZE = 5;
+public static final long INTERVAL = 100000L;
+public static final int HASHTAG_SAMPLESIZE = 10;
 public static final int CONTINENT_SAMPLESIZE = 1;
 public static final String HASHTAG_SPOUT = "HASHTAG_SPOUT";
 public static final String TWEET_STREAM = "TWEET_STREAM";

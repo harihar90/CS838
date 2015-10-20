@@ -60,17 +60,18 @@ public class TweetStats {
         TopologyBuilder builder = new TopologyBuilder();
         
         builder.setSpout(TopologyConstants.TWEET_STREAM, new TwitterSampleSpout(consumerKey, consumerSecret,
-                                accessToken, accessTokenSecret,new String[]{args[5]},true));
+                                accessToken, accessTokenSecret,hashTags,false));
         builder.setSpout(TopologyConstants.HASHTAG_SPOUT, new HashTagSpout(hashTags));
         builder.setSpout(TopologyConstants.CONTINENT_SPOUT, new ContinentSpout());
         builder.setBolt(TopologyConstants.CONTINENT_FILTER, new ContinentFilter())
                 .allGrouping(TopologyConstants.CONTINENT_SPOUT).shuffleGrouping(TopologyConstants.TWEET_STREAM);
         builder.setBolt(TopologyConstants.HASHTAG_FILTER, new HashTagFilter())
         .allGrouping(TopologyConstants.HASHTAG_SPOUT).shuffleGrouping(TopologyConstants.CONTINENT_FILTER);        
-         builder.setBolt(TopologyConstants.WORD_SPLITTER, new WordSplitter()).shuffleGrouping(TopologyConstants.HASHTAG_FILTER);
+        /* builder.setBolt(TopologyConstants.WORD_SPLITTER, new WordSplitter()).shuffleGrouping(TopologyConstants.HASHTAG_FILTER);
          builder.setBolt(TopologyConstants.STOP_WORD_FILTER, new StopWordFilter()).shuffleGrouping(TopologyConstants.WORD_SPLITTER);
          builder.setBolt(TopologyConstants.PARTIAL_AGGREGATOR, new PartialAggregator()).fieldsGrouping(TopologyConstants.STOP_WORD_FILTER, new Fields("word"));
          builder.setBolt(TopologyConstants.GLOBAL_AGGREGATOR, new GlobalAggregator()).globalGrouping(TopologyConstants.PARTIAL_AGGREGATOR);
+         */
         Config conf = new Config();
         conf.put(TopologyConstants.FILE_NAME_STR, fileName);
         
@@ -78,7 +79,7 @@ public class TweetStats {
         
         cluster.submitTopology("test", conf, builder.createTopology());
         
-        Utils.sleep(60000);
+        Utils.sleep(2000000);
         cluster.shutdown();
         System.exit(0);
     }
