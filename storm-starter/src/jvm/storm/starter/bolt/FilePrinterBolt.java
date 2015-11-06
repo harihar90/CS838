@@ -1,8 +1,11 @@
 package storm.starter.bolt;
 
 import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -19,31 +22,36 @@ import twitter4j.Status;
 
 public class FilePrinterBolt extends BaseRichBolt {
 	OutputCollector _collector;
-	OutputStream file;
+	PrintWriter out;
 
 	@Override
 	public void prepare(Map conf, TopologyContext context, OutputCollector collector) {
-		String fileName = (String) conf.get(TopologyConstants.FILE_NAME_STR)+"_"+context.getThisTaskId();;
-		Path p = Paths.get(fileName);
-		try {
-			file = new BufferedOutputStream(Files.newOutputStream(p, CREATE, TRUNCATE_EXISTING));	
 			_collector = collector;
-		} catch (IOException x) {
-			System.err.println(x);
-		}
-
 	}
 
 	@Override
 	public void execute(Tuple tuple) {
-		if (file != null) {
-			try {
+		try {
+				Path path = Paths.get(String.valueOf(tuple.getValue(0)));
+				if(Files.exists(path))
+				{
+					out = new PrintWriter(new BufferedWriter(new FileWriter(String.valueOf(tuple.getValue(0)),true)));
+				}
+				else
+				{
+					out = new PrintWriter(new BufferedWriter(new FileWriter(String.valueOf(tuple.getValue(0)))));
+				}
+				if(out != null)
+				{
+					out.println(((Status)tuple.getValue(1)).getText().replace('\n', ' '));
+					out.close();
+				}
 				//file.write((((Status)tuple.getValue(0)).getText().replace('\n', ' ')+"\n").getBytes());
-				file.write((((Status)tuple.getValue(0)).toString().replace('\n', ' ')+"\n").getBytes());
-			} catch (IOException e) {
+				//file.write((((Status)tuple.getValue(0)).toString().replace('\n', ' ')+"\n").getBytes());
+		} catch (IOException e) {
 				System.err.println(e);
-			}
 		}
+		
 	}
 
 	@Override
@@ -53,12 +61,12 @@ public class FilePrinterBolt extends BaseRichBolt {
 
 	@Override
 	public void cleanup() {
-		try {
-			if (file != null)
-				file.close();
-		} catch (IOException e) {
-			System.err.println(e);
-		}
+//		try {
+//			if (file != null)
+//				file.close();
+//		} catch (IOException e) {
+//			System.err.println(e);
+//		}
 	}
 
 }

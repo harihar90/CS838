@@ -26,12 +26,16 @@ import backtype.storm.topology.TopologyBuilder;
 import backtype.storm.tuple.Fields;
 import backtype.storm.utils.Utils;
 import storm.starter.bolt.ContinentFilter;
+import storm.starter.bolt.FilePrinterBolt;
+import storm.starter.bolt.FriendsCountBolt;
 import storm.starter.bolt.GlobalAggregator;
 import storm.starter.bolt.HashTagFilter;
 import storm.starter.bolt.PartialAggregator;
+import storm.starter.bolt.PrinterBolt;
 import storm.starter.bolt.StopWordFilter;
 import storm.starter.bolt.WordSplitter;
 import storm.starter.spout.ContinentSpout;
+import storm.starter.spout.FriendsCountSpout;
 import storm.starter.spout.HashTagSpout;
 import storm.starter.spout.TwitterSampleSpout;
 import storm.starter.util.TopologyConstants;
@@ -57,16 +61,21 @@ public class TweetStats {
         String[] arguments = args.clone();
         String[] hashTags = Arrays.copyOfRange(arguments, 6, arguments.length);
         hashStrings(hashTags);
+        Integer []friendsCount = { 100, 200, 500, 1000, 2000, 5000};
         TopologyBuilder builder = new TopologyBuilder();
         
         builder.setSpout(TopologyConstants.TWEET_STREAM, new TwitterSampleSpout(consumerKey, consumerSecret,
                                 accessToken, accessTokenSecret,hashTags,false));
         builder.setSpout(TopologyConstants.HASHTAG_SPOUT, new HashTagSpout(hashTags));
-        builder.setSpout(TopologyConstants.CONTINENT_SPOUT, new ContinentSpout());
-        builder.setBolt(TopologyConstants.CONTINENT_FILTER, new ContinentFilter())
-                .allGrouping(TopologyConstants.CONTINENT_SPOUT).shuffleGrouping(TopologyConstants.TWEET_STREAM);
+        builder.setSpout(TopologyConstants.FRIENDSCOUNT_SPOUT, new FriendsCountSpout(friendsCount));
+        builder.setBolt(TopologyConstants.FRIENDSCOUNT_FILER, new FriendsCountBolt())
+        				.allGrouping(TopologyConstants.FRIENDSCOUNT_SPOUT).shuffleGrouping(TopologyConstants.TWEET_STREAM);
+        //builder.setSpout(TopologyConstants.CONTINENT_SPOUT, new ContinentSpout());
+        //builder.setBolt(TopologyConstants.CONTINENT_FILTER, new ContinentFilter())
+        //        .allGrouping(TopologyConstants.CONTINENT_SPOUT).shuffleGrouping(TopologyConstants.TWEET_STREAM);
         builder.setBolt(TopologyConstants.HASHTAG_FILTER, new HashTagFilter())
-        .allGrouping(TopologyConstants.HASHTAG_SPOUT).shuffleGrouping(TopologyConstants.CONTINENT_FILTER);        
+        .allGrouping(TopologyConstants.HASHTAG_SPOUT).shuffleGrouping(TopologyConstants.FRIENDSCOUNT_FILER);  
+        builder.setBolt(TopologyConstants.PRINT_STREAM, new FilePrinterBolt()).globalGrouping(TopologyConstants.HASHTAG_FILTER);
         builder.setBolt(TopologyConstants.WORD_SPLITTER, new WordSplitter()).shuffleGrouping(TopologyConstants.HASHTAG_FILTER);
         builder.setBolt(TopologyConstants.STOP_WORD_FILTER, new StopWordFilter()).shuffleGrouping(TopologyConstants.WORD_SPLITTER);
         builder.setBolt(TopologyConstants.PARTIAL_AGGREGATOR, new PartialAggregator()).fieldsGrouping(TopologyConstants.STOP_WORD_FILTER, new Fields("word"));

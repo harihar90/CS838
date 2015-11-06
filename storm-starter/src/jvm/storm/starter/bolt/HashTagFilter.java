@@ -21,7 +21,7 @@ import twitter4j.Status;
 public class HashTagFilter extends BaseRichBolt {
 	OutputCollector _collector;
 	Queue<Tuple> tweetQueue;
-
+	Long generation;
 	Map<Long, Long> timeStampMap = new HashMap<Long, Long>();
 	Queue<List<String>> hashTagQueue = new LinkedList<List<String>>();
 	Map<Long, List<String>> hashTagMap = new HashMap<Long, List<String>>();
@@ -36,7 +36,7 @@ public class HashTagFilter extends BaseRichBolt {
 	public void execute(Tuple input) {
 		if (input.getSourceComponent().equals(TopologyConstants.HASHTAG_SPOUT)) {
 			List<String> hashTags = new ArrayList<String>();
-
+			generation=(Long)input.getValue(0);
 			for (Object value : input.getValues().subList(1, input.getValues().size())) {
 				for (String word : (List<String>) value)
 					hashTags.add(word.toLowerCase());
@@ -50,7 +50,7 @@ public class HashTagFilter extends BaseRichBolt {
 			}
 
 		}
-		if (input.getSourceComponent().equals(TopologyConstants.CONTINENT_FILTER)) {
+		if (input.getSourceComponent().equals(TopologyConstants.FRIENDSCOUNT_FILER)) {
 			filterTuple(input);
 		}
 
@@ -73,9 +73,12 @@ public class HashTagFilter extends BaseRichBolt {
 		Status tweet = (Status) input.getValue(1);
 		for (String tag : hashTags) {
 			if (tweet.getText().toLowerCase().contains(tag)) {
-				_collector.emit(input.getValues());
+				System.out.println("True");
+				_collector.emit(new Values(generation, input.getValue(1)));
 				return;
 			}
+			else
+				System.out.println("False");
 		}
 
 	}

@@ -124,9 +124,6 @@ public class TwitterSampleSpout extends BaseRichSpout {
 		AccessToken token = new AccessToken(accessToken, accessTokenSecret);
 		twitterStream.setOAuthAccessToken(token);
 		FilterQuery query = new FilterQuery().language("en");
-		if(geoTagged){
-			query.locations(new double[][]{{-180,-90},{180,90}});
-		}
 		 if (keyWords.length == 0){
 			keyWords=new String[]{"#yetanothersummytwittertesttag"};
 		}	
