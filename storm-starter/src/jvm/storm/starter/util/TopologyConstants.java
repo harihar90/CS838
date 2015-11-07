@@ -2,7 +2,7 @@ package storm.starter.util;
 
 public class TopologyConstants {
 public static final long INTERVAL = 30000L;
-public static final int HASHTAG_SAMPLESIZE = 20;
+public static final int HASHTAG_SAMPLESIZE = 30;
 public static final int CONTINENT_SAMPLESIZE = 1;
 public static final int FRIENDSCOUNT_SAMPLESIZE = 1;
 public static final String HASHTAG_SPOUT = "HASHTAG_SPOUT";

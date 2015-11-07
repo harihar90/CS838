@@ -55,7 +55,8 @@ public class GlobalAggregator extends BaseRichBolt {
 					Map<String, Long> wordCount = sortByComparator(genEntry.getValue());
 					Set<String> words = wordCount.keySet();
 					for (String word : words) {
-						file.write((word + "\n").getBytes());
+						file.write((word + " ").getBytes());
+						file.write((wordCount.get(word) + "\n").getBytes());
 					}
 					file.flush();
 					file.close();

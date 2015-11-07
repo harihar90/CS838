@@ -88,8 +88,8 @@ public class TweetStats {
         
         cluster.submitTopology("test", conf, builder.createTopology());
         
-        Utils.sleep(2000000);
-        cluster.shutdown();
-        System.exit(0);
+//        Utils.sleep(2000000);
+//        cluster.shutdown();
+//        System.exit(0);
     }
 }
